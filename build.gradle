@@ -1,0 +1,65 @@
+plugins {
+	// Apply Gradle Java Plugin for the gradle plugin
+	id 'java-gradle-plugin'
+	// Apply the maven publish plugin for publishing the gradle plugin
+	id 'maven-publish'
+}
+
+group = 'com.minecrafttas'
+version = '1.0.0-SNAPSHOT'
+archivesBaseName = 'multiversion'
+
+// Repositories for dependencies
+repositories {
+	maven { url = "https://maven.mgnet.work" }
+	maven { url = "https://maven.fabricmc.net/" }
+	mavenCentral()
+}
+
+// Dependencies
+dependencies {
+	// Gradle Plugin API
+    implementation gradleApi()
+    // Fabric Loom plugin
+    implementation group: 'net.fabricmc', name: 'fabric-loom', version: '0.12-SNAPSHOT'
+}
+
+// Make it export with a javadoc and sources jar
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+// Plugin Info
+gradlePlugin {
+    plugins {
+        mcloader {
+            id = 'multiversion'
+            implementationClass = 'com.minecrafttas.multiversion.MultiVersionPlugin'
+        }
+    }
+}
+
+// Publishing
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+        	groupId = project.group
+        	version = project.version
+        	artifactId = project.archivesBaseName
+            from components.java
+        }
+    }
+}
+
+// Show only a few tasks
+afterEvaluate {
+	// Hide all tasks by putting them into the 'null' group
+	project.getAllTasks(true).each { key, val -> 
+		val.each {
+			it.group = null
+		}	
+	}
+	tasks.getByName("build").group = "mvp"
+	tasks.getByName("publishToMavenLocal").group = "mvp"
+}
