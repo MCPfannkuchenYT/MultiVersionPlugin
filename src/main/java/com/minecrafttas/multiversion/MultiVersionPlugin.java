@@ -6,6 +6,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
 
+import net.fabricmc.loom.api.LoomGradleExtensionAPI;
 import net.fabricmc.loom.api.mappings.layered.spec.LayeredMappingSpecBuilder;
 import net.fabricmc.loom.bootstrap.LoomGradlePluginBootstrap;
 import net.fabricmc.loom.configuration.providers.mappings.GradleMappingContext;
@@ -67,6 +68,8 @@ public class MultiVersionPlugin implements Plugin<Project> {
 	public void loom(Project project, String mc) {
 		// Apply Loom Plugin
 		project.getPlugins().apply(LoomGradlePluginBootstrap.class);
+		// Update intermediary url if necessary
+		project.getExtensions().findByType(LoomGradleExtensionAPI.class).getIntermediaryUrl().set("https://maven.legacyfabric.net/net/fabricmc/intermediary/%1$s/intermediary-%1$s-v2.jar");
 		// Add dependencies
 		project.getDependencies().add("minecraft", "com.mojang:minecraft:" + mc);
 		LayeredMappingSpecBuilderImpl builder = new LayeredMappingSpecBuilderImpl();
